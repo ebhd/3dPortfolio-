@@ -24,6 +24,12 @@
 }
 
 .linkCell {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  vertical-align: baseline;
   display: inline-block;
   white-space: nowrap;
   position: relative;
@@ -51,10 +57,17 @@
   color: var(--label-color, white);
 }
 
-.linkCell:hover {
+.linkCell:hover,
+.linkCell:focus-visible {
   color: transparent;
 }
 
-.linkCell:hover::after {
+.linkCell:hover::after,
+.linkCell:focus-visible::after {
   opacity: 1;
+}
+
+.linkCell:focus-visible {
+  outline: 1px solid var(--label-color, #00ff88);
+  outline-offset: -1px;
 }

@@ -1,36 +1,25 @@
 "use client";
 
+import type { ScreenName } from "@/utils/screens";
+
+
 import { useRef, useMemo, useEffect } from "react";
-import {
-  SpotLight,
-  DirectionalLight,
-  SpotLightHelper,
-  DirectionalLightHelper,
-  PointLightHelper,
-  PointLight,
-  Color,
-} from "three";
+import { SpotLight, Color } from "three";
 import { useFrame } from "@react-three/fiber";
-import { useHelper } from "@react-three/drei";
 import { blenderToThreeCoords } from "@/utils/blender";
 
 const AreaPos = blenderToThreeCoords([-2.1674, 1.04729, 2.31498]);
 
 type Props = {
-  screen: string;
+  screen: ScreenName;
 };
 
 export default function SceneLights({ screen }: Props) {
   const spotRef = useRef<SpotLight>(null!);
-  const dirRef = useRef<DirectionalLight>(null!);
-  const pointRef = useRef<PointLight>(null!);
 
   const targetColor = useRef(new Color());
   const currentColor = useRef(new Color("#00e87b"));
 
-  useHelper(spotRef, SpotLightHelper, "cyan");
-  useHelper(dirRef, DirectionalLightHelper, 1);
-  useHelper(pointRef, PointLightHelper, 1);
 
   const screenColorHex = useMemo(() => {
     switch (screen) {
@@ -53,7 +42,7 @@ export default function SceneLights({ screen }: Props) {
   useFrame(() => {
     if (spotRef.current) {
       currentColor.current.lerp(targetColor.current, 0.05);
-      spotRef.current.color.set(currentColor.current);
+      spotRef.current.color.copy(currentColor.current);
     }
   });
 
@@ -82,8 +71,8 @@ export default function SceneLights({ screen }: Props) {
         intensity={7.0}
         shadow-bias={-0.0005}
         castShadow
-        shadow-mapSize-width={1024}
-        shadow-mapSize-height={1024}
+        shadow-mapSize-width={2048}
+        shadow-mapSize-height={2048}
       />
     </>
   );

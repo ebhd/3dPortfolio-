@@ -1,13 +1,13 @@
 "use client";
 
+import type { ScreenName } from "@/utils/screens";
+
+
 import { useState } from "react";
-import Link from "next/link";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import ProjectCard from "./ProjectCard";
 
 type Props = {
-  setScreen: (screen: string) => void;
+  setScreen: (screen: ScreenName) => void;
 };
 
 const projects = [
@@ -37,7 +37,7 @@ const projects = [
   },
 ];
 
-export default function ContactScreen({ setScreen }: Props) {
+export default function Project({ setScreen }: Props) {
   const [page, setPage] = useState(0);
   const projectsPerPage = 2;
   const totalPages = Math.ceil(projects.length / projectsPerPage);
@@ -49,14 +49,14 @@ export default function ContactScreen({ setScreen }: Props) {
 
   return (
     <div className="flex flex-col justify-center text-center text-[0.5rem] space-y-[0.2rem] text-white">
-      <span className="text-white" onClick={() => setScreen("home")}>
+      <button type="button" className="screen-back text-white" onClick={() => setScreen("home")}>
         Back
-      </span>
+      </button>
       <h1 className="text-[#f5f52c]">Projects</h1>
 
       <div className="grid grid-cols-2 gap-1">
-        {paginatedProjects.map((project, i) => (
-          <ProjectCard key={i} {...project} />
+        {paginatedProjects.map((project) => (
+          <ProjectCard key={project.url} {...project} />
         ))}
       </div>
 

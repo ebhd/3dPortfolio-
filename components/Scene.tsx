@@ -1,7 +1,10 @@
 "use client";
 
+import type { ScreenName } from "@/utils/screens";
+
+
 import { useRef, useEffect, useState } from "react";
-import { PerspectiveCamera, OrbitControls } from "@react-three/drei";
+import { PerspectiveCamera } from "@react-three/drei";
 import { blenderToThreeCoords } from "@/utils/blender";
 import { useThree } from "@react-three/fiber";
 import Monitor from "./Monitor";
@@ -39,7 +42,7 @@ function FixedCamera() {
 }
 
 export default function Scene() {
-  const [screen, setScreen] = useState("home");
+  const [screen, setScreen] = useState<ScreenName>("home");
   return (
     <>
       <FixedCamera />
@@ -48,12 +51,6 @@ export default function Scene() {
         <planeGeometry args={[10, 10]} />
         <shadowMaterial opacity={0.3} />
       </mesh>
-      {/* <OrbitControls
-        enablePan={false}
-        minDistance={0}
-        maxDistance={6}
-        target={[0, 0.7, 0]}
-      /> */}
       <SceneLights screen={screen} />
     </>
   );

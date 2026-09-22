@@ -1,7 +1,10 @@
 "use client";
 
+import type { ScreenName } from "@/utils/screens";
+
+
 import { Html, useGLTF } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { useRef, useEffect, useState } from "react";
 import { blenderToThreeCoords } from "@/utils/blender";
 import * as THREE from "three";
@@ -16,20 +19,23 @@ const PointPos = blenderToThreeCoords([0.22319, -0.087753, 0.73635]);
 useGLTF.preload(MODEL);
 
 type Props = {
-  screen: string;
-  setScreen: (screen: string) => void;
+  screen: ScreenName;
+  setScreen: (screen: ScreenName) => void;
 };
 export default function Monitor({ screen, setScreen }: Props) {
   const [isRotating, setIsRotating] = useState(false);
-  const [pendingScreen, setPendingScreen] = useState<string | null>(null);
+  const [pendingScreen, setPendingScreen] = useState<ScreenName | null>(null);
 
-  function handleScreenChange(newScreen: string) {
+  function handleScreenChange(newScreen: ScreenName) {
     if (isRotating || newScreen === screen) return;
     setPendingScreen(newScreen);
     setIsRotating(true);
   }
 
-  const gltf: any = useGLTF(MODEL);
+  const gltf = useGLTF(MODEL) as Exclude<ReturnType<typeof useGLTF>, unknown[]> & {
+    nodes: Record<string, THREE.Mesh>;
+  };
+  const renderer = useThree((state) => state.gl);
   const screenMaterial = useRef<THREE.MeshStandardMaterial>(null);
   const monitorRef = useRef<THREE.Group>(null);
 
@@ -72,12 +78,25 @@ export default function Monitor({ screen, setScreen }: Props) {
     screenMaterial.current.emissiveIntensity = base + pulse + jitter + flash;
   });
 
-  gltf.scene.traverse((obj: any) => {
-    if (obj.isMesh) {
-      obj.castShadow = true;
-      obj.receiveShadow = true;
-    }
-  });
+  useEffect(() => {
+    const anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+    // Nodes can be reparented out of the loaded scene by React Three Fiber.
+    Object.values(gltf.nodes).forEach((object) => {
+      if (!(object instanceof THREE.Mesh)) return;
+      object.castShadow = true;
+      object.receiveShadow = true;
+      const materials = Array.isArray(object.material) ? object.material : [object.material];
+      for (const material of materials) {
+        if (!(material instanceof THREE.MeshStandardMaterial)) continue;
+        for (const texture of [material.map, material.normalMap, material.roughnessMap, material.metalnessMap]) {
+          if (texture && texture.anisotropy !== anisotropy) {
+            texture.anisotropy = anisotropy;
+            texture.needsUpdate = true;
+          }
+        }
+      }
+    });
+  }, [gltf.nodes, renderer]);
 
   const { nodes } = gltf;
 
@@ -150,7 +169,7 @@ export default function Monitor({ screen, setScreen }: Props) {
                   castShadow
                   receiveShadow
                 >
-                  <meshStandardMaterial {...mesh.material} />
+                  <primitive object={mesh.material} attach="material" />
                 </mesh>
               );
             })}

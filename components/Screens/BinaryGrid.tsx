@@ -1,4 +1,7 @@
 "use client";
+
+import type { ScreenName } from "@/utils/screens";
+
 import styles from "./css/BinaryGrid.module.css";
 
 function generateBinaryString(length: number): string {
@@ -7,21 +10,23 @@ function generateBinaryString(length: number): string {
   );
 }
 type Props = {
-  setScreen: (screen: string) => void;
+  setScreen: (screen: ScreenName) => void;
 };
 export default function BinaryGrid({ setScreen }: Props) {
   const binaryElements = [
     [generateBinaryString(46)],
     [
       generateBinaryString(11),
-      <span
+      <button
+        type="button"
         key="home"
         className={styles.linkCell}
         data-label="Home"
+        aria-label="Home"
         onClick={() => setScreen("home")}
       >
         0111000001110010
-      </span>,
+      </button>,
       generateBinaryString(19),
     ],
     [generateBinaryString(46)],
@@ -29,10 +34,12 @@ export default function BinaryGrid({ setScreen }: Props) {
 
     [
       generateBinaryString(4),
-      <span
+      <button
+        type="button"
         key="about"
         className={styles.linkCell}
         data-label="About Me"
+        aria-label="About Me"
         onClick={() => setScreen("about")}
         style={{
           textDecorationColor: "#007ae8",
@@ -40,7 +47,7 @@ export default function BinaryGrid({ setScreen }: Props) {
         }}
       >
         0110100101101110
-      </span>,
+      </button>,
       generateBinaryString(26),
     ],
     [generateBinaryString(46)],
@@ -49,10 +56,12 @@ export default function BinaryGrid({ setScreen }: Props) {
 
     [
       generateBinaryString(16),
-      <span
+      <button
+        type="button"
         key="projects"
         className={styles.linkCell}
         data-label="Projects"
+        aria-label="Projects"
         onClick={() => setScreen("projects")}
         style={{
           textDecorationColor: "#f5f52c",
@@ -60,17 +69,19 @@ export default function BinaryGrid({ setScreen }: Props) {
         }}
       >
         0110001101101111
-      </span>,
+      </button>,
       generateBinaryString(14),
     ],
     [generateBinaryString(46)],
     [generateBinaryString(46)],
     [
       generateBinaryString(26),
-      <span
+      <button
+        type="button"
         key="contact"
         className={styles.linkCell}
         data-label="Contact"
+        aria-label="Contact"
         onClick={() => setScreen("contact")}
         style={{
           textDecorationColor: "#e80050",
@@ -78,7 +89,7 @@ export default function BinaryGrid({ setScreen }: Props) {
         }}
       >
         0110001101101111
-      </span>,
+      </button>,
       generateBinaryString(4),
     ],
     [generateBinaryString(46)],
